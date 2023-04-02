@@ -4,13 +4,17 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { IconService } from './icon.service';
 import { IconComponent } from './icon/icon.component';
+import { CollectionComponent } from './collection/collection.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
-    IconComponent
+    IconComponent,
+    CollectionComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     HttpClientModule
   ],

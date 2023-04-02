@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
 interface CollectionItem {
   id: string;
@@ -10,11 +10,11 @@ interface CollectionItem {
 
 export interface Icon {
   requestId: string;
-  id: string,
-  data: string
+  id: string;
+  data: string;
 }
 
-interface requestQueue {
+interface RequestQueue {
   icon: string;
   requestId: string;
 }
@@ -27,7 +27,9 @@ export class IconService {
   collections: CollectionItem[] = [];
 
   iconSubject$: Subject<Icon> = new Subject();
-  iconRequests: requestQueue[] = [];
+  iconRequests: RequestQueue[] = [];
+
+  loadAllCollections$: Subject<boolean> = new Subject();
 
   constructor(
     private readonly http: HttpClient
@@ -56,17 +58,41 @@ export class IconService {
     ];
   }
 
-  getIconData() {
+  getIconData(): Observable<Icon> {
     return this.iconSubject$.asObservable();
+  }
+
+  getLoadAllCollections(): Observable<boolean> {
+    return this.loadAllCollections$.asObservable();
+  }
+
+  getAllIdCollections(): string[] {
+    return this.collections.map(m => m.id);
+  }
+
+  getCollectionIcons(collection: string): string[] {
+    let icons: string[] = [];
+    this.iconList.forEach((icon, index) => {
+      if (index.startsWith(collection)) {
+        icons.push(icon);
+      }
+    });
+    return icons;
+  }
+
+  getCollectionIconsIds(collection: string): string[] {
+    let icons: string[] = [];
+    this.iconList.forEach((_icon, index) => {
+      if (index.startsWith(collection)) {
+        icons.push(index);
+      }
+    });
+    return icons;
   }
 
   getIcon(icon: string, requestId: string): void {
     if (this.iconList.has(icon)) {
-      this.iconSubject$.next({
-        requestId,
-        id: icon,
-        data: <string>this.iconList.get(icon) 
-      });
+      this.sendIconData(requestId, icon, <string>this.iconList.get(icon));
     } else {
       this.iconRequests.push({
         icon,
@@ -76,48 +102,75 @@ export class IconService {
     }
   }
 
-  loadIconCollection(icon: string) {
-    const idCollection = icon.split('-')[0];
-    const collectionInfoIndex = this.collections.findIndex(c => c.id === idCollection);
-
-    if (collectionInfoIndex < 0) {
-      return;
-    }
-
-    if (!this.collections[collectionInfoIndex].loading &&
-      !this.collections[collectionInfoIndex].loaded) {
-
-      this.collections[collectionInfoIndex].loading = true;
+  loadIconCollection(icon: string): void {
+    const idCollection = this.getIdCollection(icon);
+    const collection = this.getCollection(icon);
+    if (!!collection && !collection.loading && !collection.loaded) {
+      collection.loading = true;
       this.http.get(`/assets/iconos/${idCollection}.json`).subscribe(data => {
-        (data as Icon[]).forEach(item => {
-          this.iconList.set(item.id, item.data);
-        });
-        this.collections[collectionInfoIndex].loading = false;
-        this.collections[collectionInfoIndex].loaded = true;
-
+        this.fillCollectionItem(data as Icon[], collection);
         this.dispatchRequestedIcons();
       });
 
     }
   }
 
-  dispatchRequestedIcons() {
+  dispatchRequestedIcons(): void {
     this.iconRequests.forEach(request => {
-      const idCollection = request.icon.split('-')[0];
-
-      const collectionInfoIndex = this.collections.findIndex(c => c.id === idCollection);
-
-      if (collectionInfoIndex < 0) {
-        return;
-      }
-
-      if (this.collections[collectionInfoIndex].loaded) {
-        this.iconSubject$.next({
-          requestId: request.requestId,
-          id: request.icon,
-          data: <string>this.iconList.get(request.icon.split('-').slice(1).join('-'))
-        });
+      const collection = this.getCollection(request.icon);
+      if (!!collection && collection.loaded) {
+        this.sendIconData(
+          request.requestId,
+          request.icon,
+          <string>this.iconList.get(request.icon)
+        );
       }
     });
+  }
+
+  getIdCollection(icon: string): string {
+    return icon.split('-')[0];
+  }
+
+  getCollection(icon: string): CollectionItem | null {
+    const idCollection = this.getIdCollection(icon);
+    const collectionInfoIndex = this.collections.findIndex(c => c.id === idCollection);
+    return collectionInfoIndex < 0 ? null : this.collections[collectionInfoIndex];
+  }
+
+  sendIconData(requestId: string, id: string, data: string) {
+    return this.iconSubject$.next({
+      requestId, id, data
+    });
+  }
+  
+  fillCollectionItem(data: Icon[], collection: CollectionItem): void {
+    data.forEach(item => {
+      this.iconList.set(`${collection.id}-${item.id}`, item.data);
+    });
+    collection.loading = false;
+    collection.loaded = true;
+  }
+
+  loadCollections() {
+    const collectionsToLoad = this.collections.filter(i => !i.loaded);
+    const totalCollectionsToLoad = collectionsToLoad.length;
+
+    if (totalCollectionsToLoad) {
+      let collectionsLoaded = 0;
+      collectionsToLoad.forEach(collection => {
+        this.http.get(`/assets/iconos/${collection.id}.json`).subscribe(data => {
+          this.fillCollectionItem(data as Icon[], collection);
+          collectionsLoaded++;
+          if (collectionsLoaded === totalCollectionsToLoad) {
+            this.loadAllCollections$.next(true);
+            this.loadAllCollections$.complete();
+          }
+        })
+      });
+    } else {
+      this.loadAllCollections$.next(true);
+      this.loadAllCollections$.complete();
+    }
   }
 }

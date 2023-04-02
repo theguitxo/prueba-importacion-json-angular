@@ -1,47 +1,62 @@
 <div>
-  <icon-component [icon]="'arrow-alert-alt'"></icon-component>
-  <icon-component [icon]="'arrow-alert-circle'"></icon-component>
-  <icon-component [icon]="'arrow-alert-hexagon'"></icon-component>
-  <icon-component [icon]="'arrow-alert-square'"></icon-component>
-  <icon-component [icon]="'arrow-alert-triangle'"></icon-component>
-  <icon-component [icon]="'arrow-align-arrow-down'"></icon-component>
-  <icon-component [icon]="'arrow-align-arrow-left'"></icon-component>
-  <icon-component [icon]="'arrow-align-arrow-right'"></icon-component>
-  <icon-component [icon]="'arrow-align-arrow-up'"></icon-component>
-  <icon-component [icon]="'arrow-align-bottom'"></icon-component>
+  <button (click)="showIconsComponents()">Show Icons</button>
+  &nbsp;
+  <button (click)="loadAllCollections()">Load All Icons</button>
 </div>
 
-<div>
-  <icon-component [icon]="'cursor-battery'"></icon-component>
-  <icon-component [icon]="'cursor-bell-notification'"></icon-component>
-  <icon-component [icon]="'cursor-camera'"></icon-component>
-  <icon-component [icon]="'cursor-controller'"></icon-component>
-  <icon-component [icon]="'cursor-doc-paper'"></icon-component>
-  <icon-component [icon]="'cursor-gear-settings'"></icon-component>
-  <icon-component [icon]="'cursor-globe'"></icon-component>
-  <icon-component [icon]="'cursor-home'"></icon-component>
-</div>
+<ng-container *ngIf="showCollections">
+  <ng-container *ngFor="let collection of collectionsIds">
+    <collection-component [collection]="collection"></collection-component>
+  </ng-container>
+  <br>
+</ng-container>
 
-<div>
-	<icon-component [icon]="'file-baju-basketball-sport'"></icon-component>
-	<icon-component [icon]="'file-bola-basket-basketball'"></icon-component>
-	<icon-component [icon]="'file-celana-clothes-wear'"></icon-component>
-	<icon-component [icon]="'file-jam-stopwatch-time'"></icon-component>
-	<icon-component [icon]="'file-lapangan-basket-basketball'"></icon-component>
-	<icon-component [icon]="'file-medali-medal-trophy'"></icon-component>
-	<icon-component [icon]="'file-peluit-basket-basketball'"></icon-component>
-	<icon-component [icon]="'file-ring-sport-basket'"></icon-component>
-</div>
+<ng-container *ngIf="showIcons">
+  <div>
+    <icon-component [icon]="'arrow-alert-alt'"></icon-component>
+    <icon-component [icon]="'arrow-alert-circle'"></icon-component>
+    <icon-component [icon]="'arrow-alert-hexagon'"></icon-component>
+    <icon-component [icon]="'arrow-alert-square'"></icon-component>
+    <icon-component [icon]="'arrow-alert-triangle'"></icon-component>
+    <icon-component [icon]="'arrow-align-arrow-down'"></icon-component>
+    <icon-component [icon]="'arrow-align-arrow-left'"></icon-component>
+    <icon-component [icon]="'arrow-align-arrow-right'"></icon-component>
+    <icon-component [icon]="'arrow-align-arrow-up'"></icon-component>
+    <icon-component [icon]="'arrow-align-bottom'"></icon-component>
+  </div>
 
-<div>
-  <icon-component [icon]="'money-basic-ui-computer-4'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-12'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-15'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-19'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-27'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-30'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-33'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-42'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-45'"></icon-component>
-  <icon-component [icon]="'money-basic-ui-computer-47'"></icon-component>
-</div>
+  <div>
+    <icon-component [icon]="'cursor-battery'"></icon-component>
+    <icon-component [icon]="'cursor-bell-notification'"></icon-component>
+    <icon-component [icon]="'cursor-camera'"></icon-component>
+    <icon-component [icon]="'cursor-controller'"></icon-component>
+    <icon-component [icon]="'cursor-doc-paper'"></icon-component>
+    <icon-component [icon]="'cursor-gear-settings'"></icon-component>
+    <icon-component [icon]="'cursor-globe'"></icon-component>
+    <icon-component [icon]="'cursor-home'"></icon-component>
+  </div>
+
+  <div>
+    <icon-component [icon]="'file-baju-basketball-sport'"></icon-component>
+    <icon-component [icon]="'file-bola-basket-basketball'"></icon-component>
+    <icon-component [icon]="'file-celana-clothes-wear'"></icon-component>
+    <icon-component [icon]="'file-jam-stopwatch-time'"></icon-component>
+    <icon-component [icon]="'file-lapangan-basket-basketball'"></icon-component>
+    <icon-component [icon]="'file-medali-medal-trophy'"></icon-component>
+    <icon-component [icon]="'file-peluit-basket-basketball'"></icon-component>
+    <icon-component [icon]="'file-ring-sport-basket'"></icon-component>
+  </div>
+
+  <div>
+    <icon-component [icon]="'money-basic-ui-computer-4'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-12'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-15'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-19'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-27'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-30'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-33'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-42'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-45'"></icon-component>
+    <icon-component [icon]="'money-basic-ui-computer-47'"></icon-component>
+  </div>
+</ng-container>
