@@ -8,6 +8,7 @@ import { IconService } from './icon.service';
 })
 export class AppComponent {
   showIcons = false;
+  btnShowIconsText = 'Show Icons';
   showCollections = false;
   collectionsIds: string[] = [];
 
@@ -16,7 +17,8 @@ export class AppComponent {
   ) {}
 
   showIconsComponents(): void {
-    this.showIcons = true;
+    this.showIcons = !this.showIcons;
+    this.btnShowIconsText = this.showIcons ? 'Hide Icons' : 'Show Icons';
   }
 
   showCollectionComponent(): void {

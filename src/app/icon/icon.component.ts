@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { IconService } from '../icon.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { v4 as uuidv4 } from 'uuid';
+import { AutoDestroy } from '../utils';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'icon-component',
@@ -9,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrls: ['./icon.component.scss']
 })
 export class IconComponent implements OnInit {
+  @AutoDestroy destroy$: Subject<void> = new Subject<void>();
   @Input() icon!: string;
 
   iconData!: SafeHtml;
@@ -22,7 +25,7 @@ export class IconComponent implements OnInit {
   ngOnInit(): void {
     this.requestId = uuidv4();
 
-    this.iconService.getIconData().subscribe(info => {
+    this.iconService.getIconData().pipe(takeUntil(this.destroy$)).subscribe(info => {
       if (info.requestId === this.requestId) {
         this.iconData = this.sanitizer.bypassSecurityTrustHtml(info.data);
       }

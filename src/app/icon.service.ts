@@ -59,6 +59,10 @@ export class IconService {
     ];
   }
 
+  getIconUrl(collection: string): string {
+    return `/assets/iconos/${collection}.json`
+  }
+
   getIconData(): Observable<Icon> {
     return this.iconSubject$.asObservable();
   }
@@ -109,12 +113,11 @@ export class IconService {
     const collection = this.getCollection(icon);
     if (!!collection && !collection.loading && !collection.loaded) {
       collection.loading = true;
-      this.http.get(`/assets/iconos/${idCollection}.json`).subscribe(data => {
+      this.http.get(this.getIconUrl(idCollection)).subscribe(data => {
         this.fillCollectionItem(data as Icon[], collection);
         this.dispatchRequestedIcons();
+        this.iconRequests = this.iconRequests.filter(i => !i.dispatched);
       });
-
-      this.iconRequests = this.iconRequests.filter(i => !i.dispatched);
     }
   }
 
@@ -127,6 +130,7 @@ export class IconService {
           request.icon,
           <string>this.iconList.get(request.icon)
         );
+        request.dispatched = true;
       }
     });
   }
@@ -162,7 +166,7 @@ export class IconService {
     if (totalCollectionsToLoad) {
       let collectionsLoaded = 0;
       collectionsToLoad.forEach(collection => {
-        this.http.get(`/assets/iconos/${collection.id}.json`).subscribe(data => {
+        this.http.get(this.getIconUrl(collection.id)).subscribe(data => {
           this.fillCollectionItem(data as Icon[], collection);
           collectionsLoaded++;
           if (collectionsLoaded === totalCollectionsToLoad) {
