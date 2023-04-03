@@ -17,6 +17,7 @@ export interface Icon {
 interface RequestQueue {
   icon: string;
   requestId: string;
+  dispatched: boolean;
 }
 
 @Injectable({
@@ -96,7 +97,8 @@ export class IconService {
     } else {
       this.iconRequests.push({
         icon,
-        requestId
+        requestId,
+        dispatched: false
       });
       this.loadIconCollection(icon);
     }
@@ -112,6 +114,7 @@ export class IconService {
         this.dispatchRequestedIcons();
       });
 
+      this.iconRequests = this.iconRequests.filter(i => !i.dispatched);
     }
   }
 
@@ -143,7 +146,7 @@ export class IconService {
       requestId, id, data
     });
   }
-  
+
   fillCollectionItem(data: Icon[], collection: CollectionItem): void {
     data.forEach(item => {
       this.iconList.set(`${collection.id}-${item.id}`, item.data);

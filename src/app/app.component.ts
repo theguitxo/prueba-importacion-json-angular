@@ -30,4 +30,8 @@ export class AppComponent {
     });
     this.iconService.loadCollections();
   }
+
+  showDispatchQueue(): void {
+    console.log(this.iconService.iconRequests);
+  }
 }
